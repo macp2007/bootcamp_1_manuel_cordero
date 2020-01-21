@@ -9,7 +9,30 @@ let listingData, server;
 
 const requestHandler = (request, response) => {
     const parsedUrl = url.parse(request.url);
+    //console.log(request); Used to verify status of server (information)
+    if( parsedUrl.path == '/listings' && request.method=='GET'){
+      response.writeHead(200, {'Content-Type': 'application/json'})
+      .end(JSON.stringify(listingData));
+      
+       // response.write('Testing1!'); 
+        //response.write(listingData);
+       response.end();
+    }
+    
+    
+    //  else if( parsedUrl.path == '/' && request.method == 'GET'){
+    //   response.writeHead(200, {'Content-Type': 'application/json'});
+    //   response.write('Welcome'); 
+    //   response.end();
 
+    //  }
+     
+    else {
+       response.writeHead(404, {'Content-Type': 'text/plain'}).end('Bad gateway error');
+       response.end();
+    }
+
+   
     /*
       Your request handler should send listingData in the JSON format as a response if a GET request
       is sent to the '/listings' path. Otherwise, it should send a 404 error.
@@ -29,6 +52,7 @@ const requestHandler = (request, response) => {
 };
 
 fs.readFile('listings.json', 'utf8', (err, data) => {
+  
     /*
       This callback function should save the data in the listingData variable,
       then start the server.
@@ -44,9 +68,13 @@ fs.readFile('listings.json', 'utf8', (err, data) => {
 
     // Save the sate in the listingData variable already defined
 
+    if (err) throw err;
+    listingData=JSON.parse(data);
 
-    // Creates the server
-
-    // Start the server
+    http.createServer(requestHandler).listen(port, () => {
+    //once the server is listening, this callback function is executed
+    console.log(`Server listening on: http://127.0.0.1:${port}`);
+});
+  
 
 });
